@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Artes de anúncio — Bíblia Verbo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --night: #0f172a;
+    --abyss: #0a0e1a;
+    --surface: #1a2847;
+    --gold: #c9a961;
+    --goldsoft: #d4c4b0;
+    --bronze: #8b7355;
+    --sage: #6b9e7f;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: #333;
+    font-family: Inter, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 40px;
+  }
+  .label { color: #aaa; font-size: 14px; align-self: flex-start; }
+
+  .art {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(ellipse 90% 60% at 50% -10%, #24365e 0%, var(--night) 55%, var(--abyss) 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .art::before {
+    content: "";
+    position: absolute;
+    top: -30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 55%;
+    background: radial-gradient(ellipse, rgba(201,169,97,0.22), transparent 70%);
+    pointer-events: none;
+  }
+  .square { width: 1080px; height: 1080px; padding: 90px; }
+  .wide { width: 1200px; height: 628px; padding: 60px 90px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgba(201,169,97,0.45);
+    background: rgba(201,169,97,0.12);
+    color: var(--goldsoft);
+    border-radius: 999px;
+    padding: 12px 26px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .square .badge { font-size: 20px; }
+  .wide .badge { font-size: 15px; padding: 9px 20px; }
+
+  .brand {
+    font-family: Georgia, serif;
+    color: var(--gold);
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .square .brand { font-size: 34px; margin-top: 36px; }
+  .wide .brand { font-size: 24px; margin-top: 22px; }
+
+  h1 {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.5px;
+    max-width: 22ch;
+  }
+  .square h1 { font-size: 64px; margin-top: 18px; }
+  .wide h1 { font-size: 44px; margin-top: 12px; }
+  h1 em { font-style: normal; color: var(--gold); }
+
+  .tv {
+    margin-top: 48px;
+    width: 100%;
+    max-width: 780px;
+    border: 2px solid rgba(201,169,97,0.5);
+    border-radius: 18px;
+    background: var(--abyss);
+    box-shadow: 0 0 0 8px rgba(10,14,26,0.8), 0 40px 120px rgba(0,0,0,0.6), 0 0 90px rgba(201,169,97,0.18);
+    padding: 46px 50px;
+  }
+  .wide .tv { margin-top: 28px; padding: 28px 44px; max-width: 720px; }
+  .tv .ref {
+    color: var(--gold);
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  .wide .tv .ref { font-size: 15px; }
+  .tv .verse {
+    font-family: Georgia, serif;
+    font-size: 36px;
+    line-height: 1.3;
+    font-weight: 700;
+    margin-top: 20px;
+  }
+  .wide .tv .verse { font-size: 26px; margin-top: 12px; }
+  .tv .divider {
+    width: 90px; height: 1px;
+    background: rgba(201,169,97,0.55);
+    margin: 24px auto 16px;
+  }
+  .wide .tv .divider { margin: 16px auto 10px; }
+  .tv .church {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: var(--goldsoft);
+    font-size: 22px;
+  }
+  .wide .tv .church { font-size: 17px; }
+
+  .cta {
+    margin-top: 52px;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(135deg, var(--gold), var(--bronze));
+    color: var(--night);
+    font-weight: 900;
+    border-radius: 14px;
+    padding: 26px 54px;
+    font-size: 30px;
+    box-shadow: 0 24px 70px rgba(201,169,97,0.35);
+  }
+  .wide .cta { margin-top: 28px; padding: 16px 38px; font-size: 21px; }
+
+  .foot {
+    margin-top: 34px;
+    display: flex;
+    gap: 34px;
+    color: var(--goldsoft);
+    font-weight: 700;
+  }
+  .square .foot { font-size: 21px; }
+  .wide .foot { font-size: 15px; margin-top: 20px; }
+  .foot span::before { content: "✓  "; color: var(--sage); }
+</style>
+</head>
+<body>
+
+  <p class="label">1080 × 1080 — CAPA DE PRODUTO Hotmart (limpa, para vitrine e checkout)</p>
+  <div class="art square cover">
+    <div class="book-icon">
+      <svg width="86" height="86" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+      </svg>
+    </div>
+    <p class="cover-brand">Bíblia Verbo</p>
+    <p class="cover-tag">A Palavra apresentada com excelência</p>
+    <div class="tv">
+      <p class="ref">João 3:16</p>
+      <p class="verse">“Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito.”</p>
+      <div class="divider"></div>
+      <p class="church">Nome da sua igreja Aqui!</p>
+    </div>
+    <div class="foot">
+      <span>Windows + Web</span>
+      <span>Feita para igrejas</span>
+    </div>
+  </div>
+  <style>
+    .cover { justify-content: center; }
+    .cover .book-icon {
+      width: 150px; height: 150px;
+      border-radius: 32px;
+      background: linear-gradient(135deg, var(--gold), var(--bronze));
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 30px 90px rgba(201,169,97,0.35);
+    }
+    .cover .cover-brand {
+      font-family: Georgia, serif;
+      font-size: 88px;
+      font-weight: 700;
+      margin-top: 44px;
+      letter-spacing: -1px;
+    }
+    .cover .cover-tag {
+      color: var(--goldsoft);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 16px;
+    }
+    .cover .tv { margin-top: 56px; }
+  </style>
+
+  <p class="label">1080 × 1080 — feed / anúncio quadrado</p>
+  <div class="art square">
+    <span class="badge">Para igrejas · Windows + Web</span>
+    <h1>Apresente a Palavra de Deus com <em>excelência</em> na TV da sua igreja.</h1>
+    <div class="tv">
+      <p class="ref">João 3:16</p>
+      <p class="verse">“Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito.”</p>
+      <div class="divider"></div>
+      <p class="church">Nome da sua igreja Aqui!</p>
+    </div>
+    <div class="cta">Quero na minha igreja →</div>
+    <div class="foot">
+      <span>Pagamento único</span>
+      <span>Funciona offline</span>
+      <span>Garantia de 7 dias</span>
+    </div>
+    <p class="brand">Bíblia Verbo</p>
+  </div>
+
+  <p class="label">1200 × 628 — banner horizontal (Hotmart / redes)</p>
+  <div class="art wide">
+    <span class="badge">Para igrejas · Windows + Web</span>
+    <h1>A Palavra projetada com <em>excelência</em> no telão da sua igreja.</h1>
+    <div class="tv">
+      <p class="ref">João 3:16</p>
+      <p class="verse">“Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito.”</p>
+      <div class="divider"></div>
+      <p class="church">Nome da sua igreja Aqui!</p>
+    </div>
+    <div class="foot">
+      <span>Pagamento único</span>
+      <span>Funciona offline</span>
+      <span>Garantia de 7 dias</span>
+    </div>
+    <p class="brand">Bíblia Verbo</p>
+  </div>
+
+</body>
+</html>
