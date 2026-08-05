@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background: #eef0f4;
+    color: #1a2028;
+    font-family:
+      Archivo,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  ::selection {
+    background: rgba(109, 90, 237, 0.35);
+  }
+
+  button,
+  a,
+  summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  .h-13 {
+    height: 3.25rem;
+  }
+
+  /* Título display com serifa — remete à leitura bíblica do app */
+  .font-display {
+    font-family: "Source Serif 4", Georgia, Cambria, "Times New Roman", serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+@media (max-width: 767px) {
+  h1 {
+    font-size: 2.5rem;
+    line-height: 1.08;
+  }
+
+  h2 {
+    line-height: 1.1;
+  }
+}
