@@ -3,24 +3,28 @@ import { SectionHeader } from "./SectionHeader";
 
 export function Features() {
   return (
-    <section id="recursos" className="bg-light-bg px-5 py-24 lg:px-8">
+    <section id="recursos" className="bg-paper px-5 py-16 md:py-24 lg:px-10">
       <SectionHeader
         eyebrow="Mais que uma Bíblia digital"
         title="Uma ferramenta criada especialmente para igrejas."
         description="Enquanto outras Bíblias são feitas para leitura pessoal, a Bíblia Verbo foi desenvolvida para quem ministra, ensina e conduz a projeção durante o culto."
       />
 
-      <div className="mx-auto mt-14 grid max-w-7xl gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto mt-12 grid max-w-[1180px] gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
         {features.map((feature) => (
           <article
             key={feature.title}
-            className="group rounded-xl border border-light-border bg-light-card p-7 shadow-soft transition hover:-translate-y-1 hover:shadow-glow"
+            className="rounded-2xl border border-line bg-card p-6 transition hover:-translate-y-1 hover:shadow-card"
           >
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-light-card2 ring-1 ring-light-border transition group-hover:bg-primary/10">
-              <feature.icon className="h-6 w-6 text-primary-dark" />
+            <span className="mb-4 grid h-[46px] w-[46px] place-items-center rounded-xl bg-accsoft">
+              <feature.icon className="h-6 w-6 text-accent" />
             </span>
-            <h3 className="font-display mt-6 text-xl font-bold text-light-text-primary">{feature.title}</h3>
-            <p className="mt-3 leading-7 text-light-text-secondary">{feature.description}</p>
+            <h3 className="text-lg font-extrabold tracking-tight text-ink">
+              {feature.title}
+            </h3>
+            <p className="mt-2 text-[14.5px] leading-relaxed text-body">
+              {feature.description}
+            </p>
           </article>
         ))}
       </div>

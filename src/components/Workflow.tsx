@@ -3,24 +3,28 @@ import { SectionHeader } from "./SectionHeader";
 
 export function Workflow() {
   return (
-    <section id="como-funciona" className="bg-light-surface px-5 py-24 lg:px-8">
+    <section id="como-funciona" className="bg-paper2 px-5 py-16 md:py-24 lg:px-10">
       <SectionHeader
         eyebrow="Simples de operar"
         title="Do conteúdo à tela em três passos."
         description="Qualquer voluntário da equipe de mídia consegue operar já no primeiro culto. Sem treinamento demorado, sem manual complicado."
       />
 
-      <div className="mx-auto mt-14 grid max-w-6xl gap-5 md:grid-cols-3">
+      <div className="mx-auto mt-12 grid max-w-[1180px] gap-[22px] md:grid-cols-3">
         {workflow.map((item) => (
           <article
             key={item.step}
-            className="relative rounded-xl border border-light-border bg-light-bg p-8"
+            className="rounded-[18px] border border-line bg-card p-7 md:p-8"
           >
-            <span className="font-display inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-white">
+            <p className="num-stroke font-mono text-[44px] font-bold leading-none">
               {item.step}
-            </span>
-            <h3 className="font-display mt-5 text-2xl font-bold text-light-text-primary">{item.title}</h3>
-            <p className="mt-4 leading-7 text-light-text-secondary">{item.description}</p>
+            </p>
+            <h3 className="mt-4 text-xl font-extrabold tracking-tight text-ink">
+              {item.title}
+            </h3>
+            <p className="mt-2.5 text-[14.5px] leading-relaxed text-body">
+              {item.description}
+            </p>
           </article>
         ))}
       </div>

@@ -13,7 +13,7 @@ import { Workflow } from "./components/Workflow";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-light-bg text-light-text-primary">
+    <div className="min-h-screen bg-paper text-body">
       <Navbar />
       <main>
         <Hero />

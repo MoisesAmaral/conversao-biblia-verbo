@@ -1,38 +1,45 @@
-import { BookOpenText, EnvelopeSimple, WhatsappLogo } from "@phosphor-icons/react";
+import { EnvelopeSimple, WhatsappLogo } from "@phosphor-icons/react";
 import { whatsappUrl } from "../data/site";
 
 export function Footer() {
   return (
-    <footer className="border-t border-light-border bg-light-bg px-5 py-10 lg:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary text-white">
-            <BookOpenText className="h-5 w-5" weight="fill" />
-          </span>
-          <div>
-            <p className="font-display font-bold text-light-text-primary">Bíblia Verbo</p>
-            <p className="text-sm text-light-text-secondary">A Palavra apresentada com excelência.</p>
+    <footer className="bg-navy px-5 pb-10 pt-12 lg:px-10">
+      <div className="mx-auto flex max-w-[1180px] flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
+        <div className="max-w-[360px]">
+          <div className="mb-3.5 flex items-center gap-2.5">
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-[17px] font-black text-white">
+              V
+            </span>
+            <span className="text-base font-extrabold text-white">Bíblia Verbo</span>
           </div>
+          <p className="text-sm leading-relaxed text-[#8b94a3]">
+            A Palavra apresentada com excelência.
+          </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 text-sm font-bold text-light-text-secondary">
-          <a href={whatsappUrl} className="inline-flex items-center gap-2 transition hover:text-primary-dark">
-            <WhatsappLogo className="h-4 w-4" weight="fill" />
+        <div className="flex flex-col gap-3">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 text-sm text-[#c7cede] transition hover:text-white"
+          >
+            <WhatsappLogo className="h-4 w-4 text-ok" weight="fill" />
             WhatsApp
           </a>
           <a
             href="mailto:contato@bibliaverbo.com"
-            className="inline-flex items-center gap-2 transition hover:text-primary-dark"
+            className="inline-flex items-center gap-2 text-sm text-[#c7cede] transition hover:text-white"
           >
-            <EnvelopeSimple className="h-4 w-4" />
+            <EnvelopeSimple className="h-4 w-4 text-accent2" />
             contato@bibliaverbo.com
           </a>
         </div>
       </div>
 
-      <p className="mx-auto mt-8 max-w-7xl border-t border-light-border pt-6 text-xs text-light-text-muted">
+      <div className="mx-auto mt-9 max-w-[1180px] border-t border-white/10 pt-6 text-[12.5px] text-[#69727f]">
         © {new Date().getFullYear()} Bíblia Verbo. Todos os direitos reservados.
-      </p>
+      </div>
     </footer>
   );
 }
