@@ -1,59 +1,80 @@
-import { Broadcast, GearSix, MagnifyingGlass, Television } from "@phosphor-icons/react";
+import {
+  BookOpenText,
+  Broadcast,
+  SlidersHorizontal,
+  Television,
+} from "@phosphor-icons/react";
 import { SectionHeader } from "./SectionHeader";
 
 const screens = [
   {
-    icon: MagnifyingGlass,
+    icon: BookOpenText,
     title: "Busca dos livros",
-    description: "Visual limpo para encontrar rapidamente qualquer passagem do Antigo e Novo Testamento.",
+    description:
+      "Encontre rapidamente qualquer passagem do Antigo e Novo Testamento.",
   },
   {
     icon: Television,
     title: "Tela de apresentação",
-    description: "Versículos, hinos e slides em tela cheia, com tipografia pensada para leitura confortável de longe.",
+    description: "Versículos, hinos e slides em tela cheia, legíveis de longe.",
   },
   {
-    icon: GearSix,
+    icon: SlidersHorizontal,
     title: "Painel de controle",
-    description: "Avance versículos, troque o tema e ajuste a apresentação sem que a igreja perceba.",
+    description: "Avance versículos e troque o tema sem que a igreja perceba.",
   },
   {
     icon: Broadcast,
     title: "Tela Ao vivo",
-    description: "Busque e coloque no ar qualquer conteúdo — Bíblia, Harpa ou apresentação — num só lugar.",
+    description: "Busque e coloque no ar qualquer conteúdo num só lugar.",
   },
 ];
 
 export function Showcase() {
   return (
-    <section id="demo" className="bg-light-bg px-5 py-24 lg:px-8">
-      <SectionHeader
-        eyebrow="Demonstração"
-        title="Imagine isso na TV da sua igreja."
-        description="Cada versículo projetado com clareza, sobriedade e a identidade da sua congregação — do primeiro louvor à palavra final."
+    <section id="demo" className="relative overflow-hidden bg-navy px-5 py-16 md:py-[90px] lg:px-10">
+      <div
+        aria-hidden
+        className="absolute inset-0 [background:radial-gradient(900px_500px_at_50%_-10%,rgba(106,88,234,.22),transparent_60%)]"
       />
+      <div className="relative mx-auto max-w-[1180px]">
+        <SectionHeader
+          tone="dark"
+          eyebrow="Demonstração"
+          title="Imagine isso na TV da sua igreja."
+          description="Cada versículo projetado com clareza, sobriedade e a identidade da sua congregação — do primeiro louvor à palavra final."
+        />
 
-      <div className="mx-auto mt-14 max-w-6xl rounded-xl border border-primary/25 bg-dark-bg p-8 text-white shadow-halo md:p-14">
-        <div className="flex min-h-[420px] flex-col items-center justify-center text-center">
-          <p className="text-sm font-bold uppercase tracking-widest text-primary-light">João 3:16</p>
-          <blockquote className="font-display mt-8 max-w-4xl text-3xl font-bold leading-snug md:text-5xl">
-            "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito."
+        {/* slide projetado */}
+        <div className="mt-12 flex aspect-video flex-col items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-br from-[#161b3a] to-[#0e1122] p-8 text-center shadow-panel md:aspect-[16/7] md:p-10">
+          <p className="text-[11px] font-extrabold tracking-[.2em] text-white/50 md:text-xs">
+            IGREJA VERBO
+          </p>
+          <blockquote className="mt-5 max-w-[800px] font-serif text-xl leading-normal text-white sm:text-2xl md:mt-6 md:text-3xl">
+            "Porque Deus amou o mundo de tal maneira que deu o seu Filho
+            unigênito."
           </blockquote>
-          <div className="my-8 h-px w-24 bg-primary/50" />
-          <p className="font-serif text-2xl italic text-primary-light">Bíblia Verbo</p>
+          <p className="mt-4 font-mono text-[11px] tracking-[2px] text-accent2 md:mt-5 md:text-[13px]">
+            JOÃO 3.16
+          </p>
         </div>
-      </div>
 
-      <div className="mx-auto mt-8 grid max-w-6xl gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {screens.map((screen) => (
-          <article key={screen.title} className="rounded-xl border border-light-border bg-light-card p-6 shadow-soft">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-light-card2 ring-1 ring-light-border">
-              <screen.icon className="h-5 w-5 text-primary-dark" />
-            </span>
-            <h3 className="font-display mt-4 font-bold text-light-text-primary">{screen.title}</h3>
-            <p className="mt-2 text-sm leading-6 text-light-text-secondary">{screen.description}</p>
-          </article>
-        ))}
+        <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {screens.map((screen) => (
+            <article
+              key={screen.title}
+              className="rounded-xl border border-white/10 bg-white/[.04] p-5"
+            >
+              <screen.icon className="h-[22px] w-[22px] text-accent2" />
+              <h3 className="mt-3 text-[15px] font-extrabold text-white">
+                {screen.title}
+              </h3>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-[#9aa2b3]">
+                {screen.description}
+              </p>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );

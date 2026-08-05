@@ -10,8 +10,8 @@
   body {
     margin: 0;
     min-width: 320px;
-    background: #eef0f4;
-    color: #1a2028;
+    background: #f7f6f2;
+    color: #3f4552;
     font-family:
       Archivo,
       system-ui,
@@ -19,6 +19,8 @@
       BlinkMacSystemFont,
       "Segoe UI",
       sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
   }
 
   * {
@@ -26,7 +28,7 @@
   }
 
   ::selection {
-    background: rgba(109, 90, 237, 0.35);
+    background: rgba(106, 88, 234, 0.3);
   }
 
   button,
@@ -37,24 +39,9 @@
 }
 
 @layer components {
-  .h-13 {
-    height: 3.25rem;
-  }
-
-  /* Título display com serifa — remete à leitura bíblica do app */
-  .font-display {
-    font-family: "Source Serif 4", Georgia, Cambria, "Times New Roman", serif;
-    letter-spacing: -0.01em;
-  }
-}
-
-@media (max-width: 767px) {
-  h1 {
-    font-size: 2.5rem;
-    line-height: 1.08;
-  }
-
-  h2 {
-    line-height: 1.1;
+  /* Números dos passos com contorno, como no design de referência */
+  .num-stroke {
+    color: #efecfd;
+    -webkit-text-stroke: 1px #8b7bf0;
   }
 }

@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Sparkle,
   Television,
+  WifiSlash,
 } from "@phosphor-icons/react";
 
 export const checkoutUrl = "https://pay.hotmart.com/H106580171W";
@@ -24,6 +25,14 @@ export const benefits = [
   "Departamentos com apresentações próprias",
   "Modelo Preview/Programa, como um switcher profissional",
   "Funciona 100% offline, direto no Windows",
+];
+
+// Faixa de destaques logo abaixo do hero, como no design de referência
+export const featureStrip = [
+  { icon: Television, label: "Tela exclusiva para TV/projetor" },
+  { icon: MusicNotes, label: "Harpa Cristã · 640 hinos" },
+  { icon: Folders, label: "Departamentos com slides" },
+  { icon: WifiSlash, label: "100% offline no Windows" },
 ];
 
 export const trustBadges = [
@@ -187,6 +196,6 @@ export const comparisonRows = [
   ["Departamentos com apresentações próprias", false, true],
   ["Modelo Preview/Programa", false, true],
   ["Logo e nome da igreja na tela", false, true],
-  ["Funciona offline no Windows", false, true],
+  ["Funciona offline no Windows", "às vezes", true],
   ["Pagamento único, sem mensalidade", false, true],
 ];
