@@ -21,7 +21,7 @@ export function Hero() {
       {/* brilhos radiais roxo e dourado, como no design de referência */}
       <div
         aria-hidden
-        className="absolute inset-0 [background:radial-gradient(1100px_600px_at_78%_-8%,rgba(106,88,234,.32),transparent_60%),radial-gradient(700px_500px_at_8%_110%,rgba(201,154,63,.12),transparent_55%)]"
+        className="absolute inset-0 [background:radial-gradient(1100px_600px_at_78%_-8%,rgba(200,16,46,.32),transparent_60%),radial-gradient(700px_500px_at_8%_110%,rgba(201,154,63,.12),transparent_55%)]"
       />
 
       <div className="relative mx-auto grid max-w-[1180px] items-center gap-10 px-5 pb-14 pt-12 lg:grid-cols-[1.02fr_1.18fr] lg:gap-14 lg:px-10 lg:pb-20 lg:pt-16">
