@@ -37,8 +37,23 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto mt-9 max-w-[1180px] border-t border-white/10 pt-6 text-[12.5px] text-[#69727f]">
-        © {new Date().getFullYear()} Bíblia Verbo. Todos os direitos reservados.
+      <div className="mx-auto mt-9 flex max-w-[1180px] flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6 text-[12.5px] text-[#69727f]">
+        <span>
+          © {new Date().getFullYear()} Bíblia Verbo. Todos os direitos reservados.
+        </span>
+        {/*
+          Crédito discreto, não competindo com a identidade do produto: mesmo
+          tratamento mono-uppercase-vermelho do rodapé do site da 123DEVS.
+        */}
+        <a
+          href="https://123devs.com.br"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 font-mono text-[10.5px] tracking-[.14em] text-[#69727f] uppercase transition hover:text-[#E01B33]"
+        >
+          <span className="inline-block h-[5px] w-[5px] rounded-full bg-[#C8102E]" />
+          feito pela 123devs
+        </a>
       </div>
     </footer>
   );

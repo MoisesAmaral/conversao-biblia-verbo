@@ -35,7 +35,7 @@ export function Showcase() {
     <section id="demo" className="relative overflow-hidden bg-navy px-5 py-16 md:py-[90px] lg:px-10">
       <div
         aria-hidden
-        className="absolute inset-0 [background:radial-gradient(900px_500px_at_50%_-10%,rgba(106,88,234,.22),transparent_60%)]"
+        className="absolute inset-0 [background:radial-gradient(900px_500px_at_50%_-10%,rgba(200,16,46,.22),transparent_60%)]"
       />
       <div className="relative mx-auto max-w-[1180px]">
         <SectionHeader

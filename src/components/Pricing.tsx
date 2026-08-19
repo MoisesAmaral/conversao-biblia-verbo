@@ -6,7 +6,7 @@ export function Pricing() {
     <section id="planos" className="relative overflow-hidden bg-navy px-5 py-16 md:py-24 lg:px-10">
       <div
         aria-hidden
-        className="absolute inset-0 [background:radial-gradient(800px_500px_at_50%_-10%,rgba(201,154,63,.16),transparent_60%),radial-gradient(700px_500px_at_90%_110%,rgba(106,88,234,.2),transparent_55%)]"
+        className="absolute inset-0 [background:radial-gradient(800px_500px_at_50%_-10%,rgba(201,154,63,.16),transparent_60%),radial-gradient(700px_500px_at_90%_110%,rgba(200,16,46,.2),transparent_55%)]"
       />
       <div className="relative mx-auto max-w-[900px]">
         <div className="mx-auto max-w-2xl text-center">
