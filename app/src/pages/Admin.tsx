@@ -14,6 +14,7 @@ interface Metrics {
 interface Account {
   id: string;
   church_name: string;
+  email: string | null;
   created_at: string;
   is_active: boolean;
   role: string;
@@ -151,7 +152,7 @@ export default function Admin() {
             <table className="w-full text-sm">
               <thead>
                 <tr className={`border-b ${rowBorder} text-left ${mutedClass}`}>
-                  <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Igreja</th>
+                  <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">E-mail</th>
                   <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Criada em</th>
                   <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Papel</th>
                   <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Status</th>
@@ -165,7 +166,10 @@ export default function Admin() {
                 )}
                 {accounts.map((acc) => (
                   <tr key={acc.id} className={`border-b ${rowBorder} last:border-0`}>
-                    <td className="px-4 py-3 font-medium">{acc.church_name || <span className={mutedClass}>Sem nome</span>}</td>
+                    <td className="px-4 py-3">
+                      <div className="font-medium">{acc.email || <span className={mutedClass}>Sem e-mail</span>}</div>
+                      <div className={`text-xs ${mutedClass}`}>{acc.church_name || "Sem nome de igreja"}</div>
+                    </td>
                     <td className={`px-4 py-3 ${mutedClass}`}>{fmtDate(acc.created_at)}</td>
                     <td className="px-4 py-3">
                       <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${acc.role === "admin" ? "bg-primary/15 text-primary-light" : `${chipClass}`}`}>{acc.role}</span>
