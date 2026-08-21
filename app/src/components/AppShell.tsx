@@ -31,7 +31,7 @@ export default function AppShell({ children, onOpenSettings }: Props) {
       <div className="flex-1 min-w-0 flex flex-col">
         <div className={`flex items-center justify-between h-14 shrink-0 border-b px-5 ${barClass}`}>
           <div className="flex items-center gap-2">
-            <img src={logoMark} alt="" className="h-5 w-5 object-contain" />
+            <img src={logoMark} alt="" className="h-7 w-7 object-contain" />
             <span className="text-sm font-bold">Bíblia Verbo</span>
           </div>
           <div className="flex items-center gap-1">

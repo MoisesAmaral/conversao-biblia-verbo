@@ -10,10 +10,10 @@ import logoMark from "../assets/logo-mark.png";
 // Réplica do painel do operador do design de referência (Preview/Programa)
 export function ProductMockup() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0f1220] shadow-panel">
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0d] shadow-panel">
       {/* barra de título */}
-      <div className="flex h-[38px] items-center gap-2.5 border-b border-white/5 bg-[#141830] px-3.5">
-        <img src={logoMark} alt="" className="h-[22px] w-[22px] object-contain" />
+      <div className="flex h-[38px] items-center gap-2.5 border-b border-white/5 bg-[#131316] px-3.5">
+        <img src={logoMark} alt="" className="h-[26px] w-[26px] object-contain" />
         <span className="truncate text-xs font-semibold text-[#c7cede]">
           Bíblia Verbo — Painel do operador
         </span>

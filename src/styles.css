@@ -28,7 +28,7 @@
   }
 
   ::selection {
-    background: rgba(130, 87, 229, 0.3);
+    background: rgba(122, 22, 34, 0.3);
   }
 
   button,
@@ -41,7 +41,7 @@
 @layer components {
   /* Números dos passos com contorno, como no design de referência */
   .num-stroke {
-    color: #ece5fb;
-    -webkit-text-stroke: 1px #6842c2;
+    color: #f6e2e4;
+    -webkit-text-stroke: 1px #b23a45;
   }
 }

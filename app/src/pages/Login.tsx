@@ -118,7 +118,7 @@ export default function Login() {
           type="submit"
           disabled={!email || !password || loading}
           className="w-full py-3.5 rounded-full font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ background: "linear-gradient(135deg, #8257e5, #6842c2)" }}
+          style={{ background: "linear-gradient(135deg, #b23a45, #7a1622)" }}
         >
           {loading ? "Entrando..." : "Entrar"}
         </button>

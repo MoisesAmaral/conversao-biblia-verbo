@@ -1,9 +1,9 @@
 import { features } from "../data/site";
 import { SectionHeader } from "./SectionHeader";
 
-// Mesmo tratamento de badge com glow colorido do app desktop (Home), variando entre os
-// três acentos que a página já tem: roxo, dourado e verde — em vez de um único tom fixo.
-const TINTS = ["#8257e5", "#c99a3f", "#1a9d68"] as const;
+// Mesmo tratamento de badge com glow colorido do app (Home), variando entre os
+// três acentos que a página já tem: vinho, dourado e verde — em vez de um único tom fixo.
+const TINTS = ["#7a1622", "#c99a3f", "#1a9d68"] as const;
 
 export function Features() {
   return (
