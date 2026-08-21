@@ -1,5 +1,6 @@
 import { EnvelopeSimple, WhatsappLogo } from "@phosphor-icons/react";
 import { whatsappUrl } from "../data/site";
+import logoMark from "../assets/logo-mark.png";
 
 export function Footer() {
   return (
@@ -7,9 +8,7 @@ export function Footer() {
       <div className="mx-auto flex max-w-[1180px] flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
         <div className="max-w-[360px]">
           <div className="mb-3.5 flex items-center gap-2.5">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-[17px] font-black text-white">
-              V
-            </span>
+            <img src={logoMark} alt="" className="h-8 w-8 object-contain" />
             <span className="text-base font-extrabold text-white">Bíblia Verbo</span>
           </div>
           <p className="text-sm leading-relaxed text-[#8b94a3]">
