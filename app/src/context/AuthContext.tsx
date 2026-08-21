@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // enquanto esta aba estava aberta/adormecida — nesse caso desloga aqui.
         const claim = await claimSession();
         if (!claim.ok) {
-          await supabase.auth.signOut();
+          await supabase.auth.signOut({ scope: "local" });
           setSession(null);
           setLoading(false);
           return;
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const claim = await claimSession();
     if (!claim.ok) {
-      await supabase.auth.signOut();
+      await supabase.auth.signOut({ scope: "local" });
       if (claim.error === "session_in_use") {
         return { error: null, sessionBlock: { deviceLabel: claim.deviceLabel, claimedAt: claim.claimedAt } };
       }
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await releaseSession();
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope: "local" });
   };
 
   const sendPasswordReset: AuthContextType["sendPasswordReset"] = async (email) => {
