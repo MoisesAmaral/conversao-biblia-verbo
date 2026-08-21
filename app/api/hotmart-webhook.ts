@@ -44,7 +44,11 @@ async function setActive(accountId: string, isActive: boolean): Promise<void> {
 }
 
 async function inviteUser(email: string): Promise<{ userId: string | null; alreadyExists: boolean }> {
-  const res = await supabaseAdminRequest("/auth/v1/invite", {
+  // redirect_to explícito: não depender só do "Site URL" configurado no painel do
+  // Supabase (que já ficou apontando pra um esquema errado uma vez e quebrou o link
+  // do convite). Precisa estar na allowlist de "Redirect URLs" em Authentication →
+  // URL Configuration, senão o Supabase ignora isso e usa o Site URL mesmo assim.
+  const res = await supabaseAdminRequest(`/auth/v1/invite?redirect_to=${encodeURIComponent("https://app.bibliaverbo.com.br/reset-password")}`, {
     method: "POST",
     body: JSON.stringify({ email }),
   });
