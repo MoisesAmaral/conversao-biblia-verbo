@@ -14,13 +14,12 @@ export default {
         paper2: "#efede7",
         line: "#e4e1d8",
         card: "#ffffff",
-        // Mixagem 123DEVS: o roxo fazia o papel de "software moderno" — dourado
-        // já era quem carregava a reverência (CTA principal, "excelência que
-        // ela merece"). Trocamos só essa peça pelo vermelho da 123DEVS; navy e
-        // gold seguem intocados.
-        accent: "#C8102E",
-        accent2: "#E01B33",
-        accsoft: "#f7dde1",
+        // Roxo Rocketseat (#8257e5) — o mesmo acento usado no app desktop, para as
+        // duas peças (app + página de vendas) lerem como o mesmo produto. Dourado
+        // segue como a reverência (CTA principal); navy também intocado.
+        accent: "#8257e5",
+        accent2: "#6842c2",
+        accsoft: "#ece5fb",
         navy: "#0c0e1a",
         navy2: "#12152a",
         gold: "#c99a3f",
@@ -28,7 +27,7 @@ export default {
         ok: "#1a9d68",
       },
       boxShadow: {
-        btn: "0 10px 26px -8px rgba(200,16,46,.6)",
+        btn: "0 10px 26px -8px rgba(130,87,229,.55)",
         "btn-gold": "0 10px 26px -8px rgba(201,154,63,.55)",
         panel: "0 40px 90px -30px rgba(0,0,0,.8)",
         card: "0 30px 70px -28px rgba(12,14,26,.5)",

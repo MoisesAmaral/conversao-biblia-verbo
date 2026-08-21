@@ -1,5 +1,6 @@
 import { WhatsappLogo } from "@phosphor-icons/react";
 import { checkoutUrl, whatsappUrl } from "../data/site";
+import logoMark from "../assets/logo-mark.png";
 
 const links = [
   { label: "Recursos", href: "#recursos" },
@@ -14,9 +15,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-line bg-paper/80 backdrop-blur-xl">
       <nav className="mx-auto flex h-16 max-w-[1180px] items-center gap-4 px-5 md:h-[70px] lg:gap-7 lg:px-10">
         <a href="#" className="flex items-center gap-2.5" aria-label="Bíblia Verbo">
-          <span className="grid h-[34px] w-[34px] place-items-center rounded-[9px] bg-accent text-lg font-black text-white">
-            V
-          </span>
+          <img src={logoMark} alt="" className="h-[34px] w-[34px] object-contain" />
           <span className="text-[17px] font-extrabold tracking-tight text-ink">
             Bíblia Verbo
           </span>

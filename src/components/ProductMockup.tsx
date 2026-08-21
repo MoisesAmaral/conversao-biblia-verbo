@@ -5,6 +5,7 @@ import {
   Play,
   Square,
 } from "@phosphor-icons/react";
+import logoMark from "../assets/logo-mark.png";
 
 // Réplica do painel do operador do design de referência (Preview/Programa)
 export function ProductMockup() {
@@ -12,9 +13,7 @@ export function ProductMockup() {
     <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0f1220] shadow-panel">
       {/* barra de título */}
       <div className="flex h-[38px] items-center gap-2.5 border-b border-white/5 bg-[#141830] px-3.5">
-        <span className="grid h-[22px] w-[22px] place-items-center rounded-md bg-accent text-xs font-extrabold text-white">
-          V
-        </span>
+        <img src={logoMark} alt="" className="h-[22px] w-[22px] object-contain" />
         <span className="truncate text-xs font-semibold text-[#c7cede]">
           Bíblia Verbo — Painel do operador
         </span>
@@ -60,7 +59,7 @@ export function ProductMockup() {
 
       {/* controles */}
       <div className="flex items-center gap-2 px-3.5 pb-3.5">
-        <button className="flex flex-1 items-center justify-center gap-2 rounded-[11px] bg-live px-3 py-2.5 text-[13px] font-bold text-white">
+        <button className="flex flex-1 items-center justify-center gap-2 rounded-full bg-live px-3 py-2.5 text-[13px] font-bold text-white">
           <Play className="h-3.5 w-3.5" weight="fill" />
           Ir ao ar
           <span className="font-mono text-[9px] opacity-80">Espaço</span>
