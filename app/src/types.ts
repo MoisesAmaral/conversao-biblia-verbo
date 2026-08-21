@@ -26,6 +26,19 @@ export interface Slide {
   style?: SlideStyle;
 }
 
+export interface FolderPresentation {
+  id: string;
+  name: string;
+  slides: Slide[];
+  updatedAt: string;
+}
+
+export interface Folder {
+  id: string;
+  name: string;
+  presentations: FolderPresentation[];
+}
+
 export type PresentationCommand =
   | { type: "theme"; value: "dark" | "light" | "blue" | "sepia" }
   | { type: "fontSize"; value: number }

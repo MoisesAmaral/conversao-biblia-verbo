@@ -17,6 +17,12 @@ import HymnDetail from "./pages/HymnDetail";
 import Launcher from "./pages/Launcher";
 import Presentation from "./pages/Presentation";
 import Admin from "./pages/Admin";
+import Folders from "./pages/Folders";
+import FolderDetail from "./pages/FolderDetail";
+import PresentationEditor from "./pages/PresentationEditor";
+import PresentationViewer from "./pages/PresentationViewer";
+import LiveQueue from "./pages/LiveQueue";
+import Settings from "./pages/Settings";
 import { getHymnEntryPath } from "./lib/lastHymn";
 
 function ShellApp() {
@@ -34,6 +40,12 @@ function ShellApp() {
           <Route path="/search" element={<Search />} />
           <Route path="/hymns" element={<Navigate to={getHymnEntryPath()} replace />} />
           <Route path="/hymns/:number" element={<HymnDetail />} />
+          <Route path="/folders" element={<Folders />} />
+          <Route path="/folders/:folderId" element={<FolderDetail />} />
+          <Route path="/folders/:folderId/presentations/:presentationId/edit" element={<PresentationEditor />} />
+          <Route path="/folders/:folderId/presentations/:presentationId/present" element={<PresentationViewer />} />
+          <Route path="/live" element={<LiveQueue />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/launcher" element={<Launcher />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<Navigate to="/" replace />} />
