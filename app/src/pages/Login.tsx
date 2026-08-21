@@ -1,7 +1,7 @@
 import { useState, FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Eye, EyeSlash } from "@phosphor-icons/react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, SessionBlock } from "../context/AuthContext";
 import { AuthLayout } from "../components/AuthLayout";
 
 export default function Login() {
@@ -15,16 +15,22 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [sessionBlock, setSessionBlock] = useState<SessionBlock | null>(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!email || !password) return;
     setLoading(true);
     setError("");
-    const { error: signInError } = await signIn(email.trim(), password);
+    setSessionBlock(null);
+    const result = await signIn(email.trim(), password);
     setLoading(false);
-    if (signInError) {
-      setError(signInError);
+    if (result.sessionBlock) {
+      setSessionBlock(result.sessionBlock);
+      return;
+    }
+    if (result.error) {
+      setError(result.error);
       return;
     }
     navigate(to, { replace: true });
@@ -90,6 +96,17 @@ export default function Login() {
             </button>
           </div>
         </div>
+
+        {sessionBlock && (
+          <div className="px-4 py-3 bg-warning/10 border border-warning/30 rounded-xl text-center">
+            <p className="text-warning text-sm font-semibold mb-1">Esta conta já está em uso em outro dispositivo.</p>
+            <p className="text-dark-text-muted text-xs">
+              {sessionBlock.deviceLabel ?? "Outro dispositivo"}
+              {sessionBlock.claimedAt && ` · desde ${new Date(sessionBlock.claimedAt).toLocaleString("pt-BR")}`}
+            </p>
+            <p className="text-dark-text-muted text-xs mt-2">Saia da conta no outro dispositivo para entrar aqui.</p>
+          </div>
+        )}
 
         {error && (
           <div className="px-4 py-3 bg-danger/10 border border-danger/30 rounded-xl">

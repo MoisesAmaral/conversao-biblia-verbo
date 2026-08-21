@@ -17,6 +17,8 @@ interface Account {
   created_at: string;
   is_active: boolean;
   role: string;
+  session_device_label: string | null;
+  session_claimed_at: string | null;
 }
 
 interface Purchase {
@@ -68,6 +70,16 @@ export default function Admin() {
     if (err || !data?.ok) {
       // reverte se falhar
       setAccounts((prev) => prev.map((acc) => (acc.id === id ? { ...acc, is_active: !acc.is_active } : acc)));
+    }
+  };
+
+  const releaseAccountSession = async (id: string) => {
+    const prevAccounts = accounts;
+    setAccounts((prev) => prev.map((acc) => (acc.id === id ? { ...acc, session_device_label: null, session_claimed_at: null } : acc)));
+    const { data, error: err } = await supabase.rpc("admin_release_session", { p_user_id: id });
+    if (err || !data?.ok) {
+      // reverte se falhar
+      setAccounts(prevAccounts);
     }
   };
 
@@ -143,12 +155,13 @@ export default function Admin() {
                   <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Criada em</th>
                   <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Papel</th>
                   <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 font-semibold text-xs uppercase tracking-wider">Sessão</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody>
                 {accounts.length === 0 && (
-                  <tr><td colSpan={5} className={`px-4 py-8 text-center ${mutedClass}`}>Nenhuma conta ainda.</td></tr>
+                  <tr><td colSpan={6} className={`px-4 py-8 text-center ${mutedClass}`}>Nenhuma conta ainda.</td></tr>
                 )}
                 {accounts.map((acc) => (
                   <tr key={acc.id} className={`border-b ${rowBorder} last:border-0`}>
@@ -163,10 +176,23 @@ export default function Admin() {
                         {acc.is_active ? "Ativa" : "Inativa"}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className={`px-4 py-3 text-xs ${mutedClass}`}>
+                      {acc.session_device_label ? (
+                        <>
+                          {acc.session_device_label}
+                          {acc.session_claimed_at && <><br />{fmtDate(acc.session_claimed_at)}</>}
+                        </>
+                      ) : "—"}
+                    </td>
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
                       <button onClick={() => toggleActive(acc.id)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${chipClass}`}>
                         {acc.is_active ? "Desativar" : "Reativar"}
                       </button>
+                      {acc.session_device_label && (
+                        <button onClick={() => releaseAccountSession(acc.id)} className={`ml-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${chipClass}`}>
+                          Encerrar sessão
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
