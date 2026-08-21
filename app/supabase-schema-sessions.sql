@@ -101,7 +101,7 @@ BEGIN
   RETURN (
     SELECT jsonb_build_object('ok', true, 'accounts',
       COALESCE(jsonb_agg(jsonb_build_object(
-        'id', p.id, 'church_name', p.church_name, 'created_at', p.created_at,
+        'id', p.id, 'church_name', p.church_name, 'email', s.email, 'created_at', p.created_at,
         'is_active', s.is_active, 'role', s.role,
         'session_device_label', s.session_device_label,
         'session_claimed_at', s.session_claimed_at,
