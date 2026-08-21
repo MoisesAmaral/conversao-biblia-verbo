@@ -14,20 +14,21 @@ export default {
         paper2: "#efede7",
         line: "#e4e1d8",
         card: "#ffffff",
-        // Roxo Rocketseat (#8257e5) — o mesmo acento usado no app desktop, para as
-        // duas peças (app + página de vendas) lerem como o mesmo produto. Dourado
-        // segue como a reverência (CTA principal); navy também intocado.
-        accent: "#8257e5",
-        accent2: "#6842c2",
-        accsoft: "#ece5fb",
-        navy: "#0c0e1a",
-        navy2: "#12152a",
+        // Vinho — mesmo acento usado no app (desktop + web) e ligado à identidade
+        // da 123devs, pra loja e produto lerem como a mesma coisa. Dourado segue
+        // reservado só pro CTA de compra (funil precisa de um tom que não seja o
+        // mesmo da marca); navy alinhado ao preto do app.
+        accent: "#7a1622",
+        accent2: "#b23a45",
+        accsoft: "#f6e2e4",
+        navy: "#0a0a0d",
+        navy2: "#131316",
         gold: "#c99a3f",
-        live: "#e23b5c",
+        live: "#e6394f",
         ok: "#1a9d68",
       },
       boxShadow: {
-        btn: "0 10px 26px -8px rgba(130,87,229,.55)",
+        btn: "0 10px 26px -8px rgba(122,22,34,.55)",
         "btn-gold": "0 10px 26px -8px rgba(201,154,63,.55)",
         panel: "0 40px 90px -30px rgba(0,0,0,.8)",
         card: "0 30px 70px -28px rgba(12,14,26,.5)",

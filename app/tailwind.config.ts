@@ -31,13 +31,13 @@ export default {
         "light-text-secondary": "#5a6472",
         "light-text-muted": "#8b95a3",
 
-        primary: "#8257e5",
-        "primary-dark": "#6842c2",
-        "primary-light": "#a374ff",
-        "primary-soft": "#211937",
+        primary: "#7a1622",
+        "primary-dark": "#4f0e17",
+        "primary-light": "#b23a45",
+        "primary-soft": "#23100f",
         success: "#20b381",
         warning: "#d99a35",
-        danger: "#ef4463",
+        danger: "#e6394f",
         info: "#5a8db0",
       },
       fontFamily: {

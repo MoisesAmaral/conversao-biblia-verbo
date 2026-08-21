@@ -4,7 +4,7 @@ import { checkoutUrl, whatsappUrl } from "../data/site";
 export function CTA() {
   return (
     <section className="bg-paper px-5 pb-16 md:pb-24 lg:px-10">
-      <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-3xl bg-gradient-to-br from-accent to-[#5344c9] px-6 py-12 text-center md:px-12 md:py-16">
+      <div className="relative mx-auto max-w-[1180px] overflow-hidden rounded-3xl bg-gradient-to-br from-accent to-[#4f0e17] px-6 py-12 text-center md:px-12 md:py-16">
         <div
           aria-hidden
           className="absolute inset-0 [background:radial-gradient(600px_400px_at_80%_120%,rgba(255,255,255,.14),transparent_60%)]"

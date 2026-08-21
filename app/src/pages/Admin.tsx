@@ -104,7 +104,7 @@ export default function Admin() {
   }
 
   const cards = [
-    { label: "Vendas aprovadas", value: metrics?.approved_purchases ?? 0, icon: ShoppingCart, tint: "#8257e5" },
+    { label: "Vendas aprovadas", value: metrics?.approved_purchases ?? 0, icon: ShoppingCart, tint: "#7a1622" },
     { label: "Vendas nos últimos 30 dias", value: metrics?.purchases_last_30d ?? 0, icon: TrendUp, tint: "#f97316" },
     { label: "Contas ativas", value: metrics?.active_accounts ?? 0, icon: Users, tint: "#20b381" },
     { label: "Contas inativas", value: metrics?.inactive_accounts ?? 0, icon: XCircle, tint: "#ef4463" },

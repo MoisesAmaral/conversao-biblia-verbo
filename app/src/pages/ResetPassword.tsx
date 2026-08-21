@@ -76,7 +76,7 @@ export default function ResetPassword() {
           <Link
             to="/forgot-password"
             className="inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold text-white"
-            style={{ background: "linear-gradient(135deg, #8257e5, #6842c2)" }}
+            style={{ background: "linear-gradient(135deg, #b23a45, #7a1622)" }}
           >
             Pedir novo link
           </Link>
@@ -140,7 +140,7 @@ export default function ResetPassword() {
           type="submit"
           disabled={!password || !confirmPassword || loading}
           className="w-full py-3.5 rounded-full font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ background: "linear-gradient(135deg, #8257e5, #6842c2)" }}
+          style={{ background: "linear-gradient(135deg, #b23a45, #7a1622)" }}
         >
           {loading ? "Salvando..." : "Salvar nova senha"}
         </button>
