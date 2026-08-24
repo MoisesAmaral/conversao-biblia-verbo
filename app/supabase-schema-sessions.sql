@@ -8,8 +8,8 @@
 ALTER TABLE account_status ADD COLUMN IF NOT EXISTS session_id UUID;
 ALTER TABLE account_status ADD COLUMN IF NOT EXISTS session_device_label TEXT;
 ALTER TABLE account_status ADD COLUMN IF NOT EXISTS session_claimed_at TIMESTAMPTZ;
--- Só pra exibição no painel admin ("visto por último") — nunca usada pra liberar
--- sessão automaticamente. Sem heartbeat que expira nada.
+-- Presença mais recente. Sessões sem atividade por 5 minutos deixam de bloquear
+-- o próximo login; o cliente também avisa e encerra a sessão localmente.
 ALTER TABLE account_status ADD COLUMN IF NOT EXISTS session_last_seen_at TIMESTAMPTZ;
 
 -- Reserva a sessão pro dispositivo atual. Chamada logo após signInWithPassword
@@ -20,17 +20,27 @@ ALTER TABLE account_status ADD COLUMN IF NOT EXISTS session_last_seen_at TIMESTA
 CREATE OR REPLACE FUNCTION claim_session(p_session_id UUID, p_device_label TEXT)
 RETURNS JSONB LANGUAGE plpgsql SECURITY DEFINER AS $$
 DECLARE
-  v_current UUID; v_label TEXT; v_claimed_at TIMESTAMPTZ;
+  v_current UUID; v_label TEXT; v_claimed_at TIMESTAMPTZ; v_last_seen TIMESTAMPTZ;
+  v_is_admin BOOLEAN; v_is_active BOOLEAN;
 BEGIN
   IF auth.uid() IS NULL THEN
     RETURN jsonb_build_object('ok', false, 'error', 'not_authenticated');
   END IF;
 
-  SELECT session_id, session_device_label, session_claimed_at
-    INTO v_current, v_label, v_claimed_at
+  SELECT session_id, session_device_label, session_claimed_at, session_last_seen_at,
+         role = 'admin', is_active
+    INTO v_current, v_label, v_claimed_at, v_last_seen, v_is_admin, v_is_active
     FROM account_status WHERE id = auth.uid() FOR UPDATE;
 
-  IF v_current IS NOT NULL AND v_current <> p_session_id THEN
+  IF NOT COALESCE(v_is_active, FALSE) THEN
+    RETURN jsonb_build_object('ok', false, 'error', 'account_inactive');
+  END IF;
+
+  -- Admin pode assumir a sessão em outra máquina. Para os demais, uma sessão
+  -- só bloqueia se ainda teve atividade nos últimos cinco minutos.
+  IF v_current IS NOT NULL AND v_current <> p_session_id
+     AND NOT COALESCE(v_is_admin, FALSE)
+     AND COALESCE(v_last_seen, v_claimed_at) > NOW() - INTERVAL '5 minutes' THEN
     RETURN jsonb_build_object('ok', false, 'error', 'session_in_use',
       'device_label', v_label, 'claimed_at', v_claimed_at);
   END IF;
@@ -39,7 +49,8 @@ BEGIN
      SET session_id = p_session_id,
          session_device_label = p_device_label,
          session_claimed_at = CASE WHEN v_current IS DISTINCT FROM p_session_id
-                                    THEN NOW() ELSE session_claimed_at END
+                                    THEN NOW() ELSE session_claimed_at END,
+         session_last_seen_at = NOW()
    WHERE id = auth.uid();
 
   RETURN jsonb_build_object('ok', true);
@@ -75,9 +86,9 @@ BEGIN
   RETURN jsonb_build_object('ok', true);
 END; $$;
 
--- Só atualiza "visto por último" pro painel admin — nunca expira/libera nada
--- sozinha. Opcional: se não for chamada por algum cliente, session_last_seen_at
--- simplesmente fica NULL, sem afetar o bloqueio de sessão em nada.
+-- Renova a presença somente da sessão que ainda é a atual. Se outro dispositivo
+-- admin assumiu a vaga, ou a conta foi desativada, o cliente recebe ok=false e
+-- desloga localmente.
 CREATE OR REPLACE FUNCTION heartbeat_session(p_session_id UUID)
 RETURNS JSONB LANGUAGE plpgsql SECURITY DEFINER AS $$
 BEGIN
@@ -85,8 +96,9 @@ BEGIN
     RETURN jsonb_build_object('ok', false, 'error', 'not_authenticated');
   END IF;
   UPDATE account_status SET session_last_seen_at = NOW()
-   WHERE id = auth.uid() AND session_id = p_session_id;
-  RETURN jsonb_build_object('ok', true);
+   WHERE id = auth.uid() AND session_id = p_session_id AND is_active;
+  IF FOUND THEN RETURN jsonb_build_object('ok', true); END IF;
+  RETURN jsonb_build_object('ok', false, 'error', 'session_not_current');
 END; $$;
 
 -- admin_list_accounts (CREATE OR REPLACE da função já existente em
