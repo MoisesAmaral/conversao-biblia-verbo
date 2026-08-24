@@ -1,6 +1,6 @@
 import { ElementType } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { HouseSimple, BookOpenText, MusicNotes, Folders as FoldersIcon, Broadcast, GearSix } from "@phosphor-icons/react";
+import { HouseSimple, BookOpenText, MusicNotes, Folders as FoldersIcon, Broadcast, GearSix, ChartLineUp } from "@phosphor-icons/react";
 import { useTheme } from "../context/ThemeContext";
 import { useApp } from "../context/AppContext";
 import { getBibleEntryPath } from "../lib/lastChapter";
@@ -28,7 +28,7 @@ interface Props {
 
 export default function Rail({ onOpenSettings, churchInitial }: Props) {
   const { theme } = useTheme();
-  const { books } = useApp();
+  const { books, isSeller } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -64,6 +64,12 @@ export default function Rail({ onOpenSettings, churchInitial }: Props) {
           </button>
         );
       })}
+
+      {isSeller && (
+        <button onClick={() => navigate("/seller")} title="Painel de vendedor" className={`relative w-[46px] h-[46px] rounded-full grid place-items-center transition-colors ${location.pathname.startsWith("/seller") ? "bg-primary-soft text-primary-light" : `${faintClass} ${hoverClass}`}`}>
+          <ChartLineUp size={23} weight={location.pathname.startsWith("/seller") ? "fill" : "regular"} />
+        </button>
+      )}
 
       <div className="flex-1" />
 

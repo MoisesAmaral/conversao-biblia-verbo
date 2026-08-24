@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
-import { claimSession, releaseSession } from "../lib/sessionGuard";
+import { claimSession, heartbeatSession, releaseSession } from "../lib/sessionGuard";
 
 export interface SessionBlock {
   deviceLabel: string | null;
@@ -15,6 +15,8 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   sendPasswordReset: (email: string) => Promise<{ error: string | null }>;
   updatePassword: (password: string) => Promise<{ error: string | null }>;
+  idleWarning: boolean;
+  continueSession: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,6 +36,9 @@ function translateAuthError(message: string): string {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [idleWarning, setIdleWarning] = useState(false);
+  const lastActivityAt = useRef(Date.now());
+  const lastHeartbeatAt = useRef(0);
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
@@ -55,10 +60,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
+      if (newSession) lastActivityAt.current = Date.now();
     });
 
     return () => listener.subscription.unsubscribe();
   }, []);
+
+  // Fechar a aba não é um evento confiável para liberar uma sessão (e uma aba
+  // pode fechar enquanto outra da mesma conta continua em uso). Por isso a
+  // presença é renovada só enquanto há atividade e expira no banco após 5 min.
+  useEffect(() => {
+    if (!session) {
+      setIdleWarning(false);
+      return;
+    }
+
+    let disposed = false;
+    const signOutInactive = async () => {
+      if (disposed) return;
+      await releaseSession();
+      await supabase.auth.signOut({ scope: "local" });
+      setSession(null);
+      setIdleWarning(false);
+    };
+    const touch = async () => {
+      if (disposed) return;
+      lastActivityAt.current = Date.now();
+      setIdleWarning(false);
+      if (lastActivityAt.current - lastHeartbeatAt.current < 30_000) return;
+      lastHeartbeatAt.current = lastActivityAt.current;
+      if (!(await heartbeatSession())) await signOutInactive();
+    };
+    const onActivity = () => { void touch(); };
+    const events: (keyof WindowEventMap)[] = ["pointerdown", "keydown", "scroll", "touchstart"];
+    events.forEach((event) => window.addEventListener(event, onActivity, { passive: true }));
+
+    const timer = window.setInterval(() => {
+      const idleFor = Date.now() - lastActivityAt.current;
+      if (idleFor >= 5 * 60_000) {
+        void signOutInactive();
+      } else if (idleFor >= 4 * 60_000) {
+        setIdleWarning(true);
+      }
+    }, 10_000);
+
+    return () => {
+      disposed = true;
+      window.clearInterval(timer);
+      events.forEach((event) => window.removeEventListener(event, onActivity));
+    };
+  }, [session?.access_token]);
 
   const signIn: AuthContextType["signIn"] = async (email, password) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -70,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (claim.error === "session_in_use") {
         return { error: null, sessionBlock: { deviceLabel: claim.deviceLabel, claimedAt: claim.claimedAt } };
       }
+      if (claim.error === "account_inactive") return { error: "Esta conta está inativa. Fale com o suporte." };
       return { error: "Não foi possível entrar. Tente novamente." };
     }
     return { error: null };
@@ -78,6 +130,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     await releaseSession();
     await supabase.auth.signOut({ scope: "local" });
+  };
+
+  const continueSession = async () => {
+    lastActivityAt.current = Date.now();
+    lastHeartbeatAt.current = lastActivityAt.current;
+    setIdleWarning(false);
+    if (!(await heartbeatSession())) {
+      await supabase.auth.signOut({ scope: "local" });
+      setSession(null);
+    }
   };
 
   const sendPasswordReset: AuthContextType["sendPasswordReset"] = async (email) => {
@@ -93,7 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, loading, signIn, signOut, sendPasswordReset, updatePassword }}>
+    <AuthContext.Provider value={{ session, loading, signIn, signOut, sendPasswordReset, updatePassword, idleWarning, continueSession }}>
       {children}
     </AuthContext.Provider>
   );
