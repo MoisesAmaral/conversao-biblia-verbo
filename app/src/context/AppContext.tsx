@@ -25,6 +25,7 @@ interface AppContextType {
   profile: Profile | null;
   refreshProfile: () => Promise<void>;
   isAdmin: boolean;
+  isSeller: boolean;
   presentationActive: boolean;
   openPresentation: () => void;
   closePresentation: () => void;
@@ -54,6 +55,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [currentVersion, setCurrentVersion] = useState<Version | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSeller, setIsSeller] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [presentationActive, setPresentationActive] = useState(presentationBus.isOpen);
@@ -125,6 +127,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setBooks(bs);
         setProfile(p);
         setIsAdmin(statusRes.data?.role === "admin");
+        setIsSeller(statusRes.data?.role === "seller");
 
         const match = vs.find((v) => v.id === p?.default_version_id) ?? vs[0] ?? null;
         setCurrentVersion(match);
@@ -155,7 +158,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider
       value={{
         versions, books, currentVersion, setVersion,
-        profile, refreshProfile, isAdmin,
+        profile, refreshProfile, isAdmin, isSeller,
         presentationActive, openPresentation, closePresentation, toggleFullscreen,
         loading, error,
       }}

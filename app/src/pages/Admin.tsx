@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { CheckCircle, XCircle, Users, ShoppingCart, TrendUp } from "@phosphor-icons/react";
+import { FormEvent, useEffect, useState } from "react";
+import { CheckCircle, XCircle, Users, ShoppingCart, TrendUp, UserPlus, X } from "@phosphor-icons/react";
 import { supabase } from "../lib/supabase";
 import { useTheme } from "../context/ThemeContext";
 
@@ -30,6 +30,7 @@ interface Purchase {
   hotmart_transaction_id: string;
   created_at: string;
 }
+interface Seller { id: string; display_name: string; email: string | null; is_active: boolean; created_at: string; links: number; leads: number; approved_sales: number; }
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
@@ -42,25 +43,67 @@ export default function Admin() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
-  const [tab, setTab] = useState<"accounts" | "purchases">("accounts");
+  const [sellers, setSellers] = useState<Seller[]>([]);
+  const [tab, setTab] = useState<"accounts" | "purchases" | "sellers">("accounts");
+  const [showSellerModal, setShowSellerModal] = useState(false);
+  const [sellerName, setSellerName] = useState("");
+  const [sellerEmail, setSellerEmail] = useState("");
+  const [sellerFormError, setSellerFormError] = useState("");
+  const [sellerSubmitting, setSellerSubmitting] = useState(false);
 
   const load = async () => {
     setLoading(true);
     setError("");
-    const [m, a, p] = await Promise.all([
+    const [m, a, p, s] = await Promise.all([
       supabase.rpc("admin_metrics"),
       supabase.rpc("admin_list_accounts"),
       supabase.rpc("admin_list_purchases"),
+      supabase.rpc("admin_list_sellers"),
     ]);
 
     if (m.error || !m.data?.ok) { setError(m.data?.error ?? m.error?.message ?? "Erro ao carregar métricas."); setLoading(false); return; }
     if (a.error || !a.data?.ok) { setError(a.data?.error ?? a.error?.message ?? "Erro ao carregar contas."); setLoading(false); return; }
     if (p.error || !p.data?.ok) { setError(p.data?.error ?? p.error?.message ?? "Erro ao carregar vendas."); setLoading(false); return; }
+    if (s.error || !s.data?.ok) { setError(s.data?.error ?? s.error?.message ?? "Erro ao carregar vendedores."); setLoading(false); return; }
 
     setMetrics(m.data as Metrics);
     setAccounts(a.data.accounts as Account[]);
     setPurchases(p.data.purchases as Purchase[]);
+    setSellers(s.data.sellers as Seller[]);
     setLoading(false);
+  };
+
+  const toggleSeller = async (id: string) => {
+    const { data, error: err } = await supabase.rpc("admin_toggle_seller_active", { p_seller_id: id });
+    if (!err && data?.ok) setSellers((all) => all.map((seller) => seller.id === id ? { ...seller, is_active: data.is_active } : seller));
+  };
+
+  const openSellerModal = () => {
+    setSellerName("");
+    setSellerEmail("");
+    setSellerFormError("");
+    setShowSellerModal(true);
+  };
+
+  const createSeller = async (event: FormEvent) => {
+    event.preventDefault();
+    const name = sellerName.trim();
+    const email = sellerEmail.trim().toLowerCase();
+    if (!name || !email) return;
+    setSellerSubmitting(true);
+    setSellerFormError("");
+    const { data, error: invokeError } = await supabase.functions.invoke<{ ok?: boolean; error?: string }>("admin-create-seller", {
+      body: { name, email },
+    });
+    setSellerSubmitting(false);
+    if (invokeError || !data?.ok) {
+      const response = (invokeError as { context?: unknown } | null)?.context;
+      const remoteError = response instanceof Response ? await response.clone().json().catch(() => null) as { error?: string } | null : null;
+      setSellerFormError(data?.error ?? remoteError?.error ?? invokeError?.message ?? "Não foi possível criar o vendedor.");
+      return;
+    }
+    setShowSellerModal(false);
+    void load();
   };
 
   useEffect(() => { load(); }, []);
@@ -144,6 +187,9 @@ export default function Admin() {
           </button>
           <button onClick={() => setTab("purchases")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${tab === "purchases" ? "bg-primary text-white" : chipClass}`}>
             Vendas ({purchases.length})
+          </button>
+          <button onClick={() => setTab("sellers")} className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${tab === "sellers" ? "bg-primary text-white" : chipClass}`}>
+            Vendedores ({sellers.length})
           </button>
         </div>
 
@@ -236,7 +282,47 @@ export default function Admin() {
             </table>
           </div>
         )}
+
+        {tab === "sellers" && (
+          <div className={`rounded-2xl border overflow-hidden ${cardClass}`}>
+            <div className={`flex items-center justify-between border-b px-4 py-3 ${rowBorder}`}><p className="font-semibold">Equipe de vendas</p><button onClick={openSellerModal} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:brightness-110"><UserPlus size={15} />Cadastrar vendedor</button></div>
+            <table className="w-full text-sm"><thead><tr className={`border-b ${rowBorder} text-left ${mutedClass}`}><th className="px-4 py-3 text-xs uppercase">Vendedor</th><th className="px-4 py-3 text-xs uppercase">Links</th><th className="px-4 py-3 text-xs uppercase">Leads</th><th className="px-4 py-3 text-xs uppercase">Vendas</th><th className="px-4 py-3 text-xs uppercase">Status</th><th /></tr></thead><tbody>
+              {sellers.length === 0 && <tr><td colSpan={6} className={`px-4 py-8 text-center ${mutedClass}`}>Nenhum vendedor cadastrado.</td></tr>}
+              {sellers.map((seller) => <tr key={seller.id} className={`border-b last:border-0 ${rowBorder}`}><td className="px-4 py-3"><p className="font-medium">{seller.display_name}</p><p className={`text-xs ${mutedClass}`}>{seller.email}</p></td><td className="px-4 py-3">{seller.links}</td><td className="px-4 py-3">{seller.leads}</td><td className="px-4 py-3">{seller.approved_sales}</td><td className={`px-4 py-3 text-xs font-semibold ${seller.is_active ? "text-success" : "text-danger"}`}>{seller.is_active ? "Ativo" : "Inativo"}</td><td className="px-4 py-3 text-right"><button onClick={() => void toggleSeller(seller.id)} className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${chipClass}`}>{seller.is_active ? "Inativar" : "Ativar"}</button></td></tr>)}
+            </tbody></table>
+          </div>
+        )}
       </div>
+
+      {showSellerModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-labelledby="seller-modal-title">
+          <form onSubmit={createSeller} className={`relative w-full max-w-md rounded-2xl border p-6 shadow-2xl ${cardClass}`}>
+            <button type="button" onClick={() => setShowSellerModal(false)} className={`absolute right-4 top-4 rounded-lg p-2 ${chipClass}`} aria-label="Fechar"><X size={18} /></button>
+            <div className="mb-6 pr-8">
+              <div className="mb-3 grid h-10 w-10 place-items-center rounded-xl bg-primary/15 text-primary-light"><UserPlus size={20} /></div>
+              <h2 id="seller-modal-title" className="text-xl font-bold">Cadastrar vendedor</h2>
+              <p className={`mt-1 text-sm ${mutedClass}`}>A pessoa confirmará o e-mail e criará a própria senha antes de acessar o painel.</p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="seller-name" className={`mb-1.5 block text-xs font-semibold uppercase tracking-wider ${mutedClass}`}>Nome completo</label>
+                <input id="seller-name" required autoFocus value={sellerName} onChange={(e) => setSellerName(e.target.value)} placeholder="Ex.: Ana Souza" className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none focus:border-primary ${theme === "dark" ? "bg-dark-surface border-dark-border2" : "bg-light-surface border-light-border"}`} />
+              </div>
+              <div>
+                <label htmlFor="seller-email" className={`mb-1.5 block text-xs font-semibold uppercase tracking-wider ${mutedClass}`}>E-mail de acesso</label>
+                <input id="seller-email" required type="email" autoComplete="email" value={sellerEmail} onChange={(e) => setSellerEmail(e.target.value)} placeholder="ana@exemplo.com" className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none focus:border-primary ${theme === "dark" ? "bg-dark-surface border-dark-border2" : "bg-light-surface border-light-border"}`} />
+              </div>
+            </div>
+
+            {sellerFormError && <p className="mt-4 rounded-xl border border-danger/30 bg-danger/10 px-3 py-2.5 text-sm text-danger">{sellerFormError}</p>}
+            <div className="mt-6 flex justify-end gap-3">
+              <button type="button" onClick={() => setShowSellerModal(false)} disabled={sellerSubmitting} className={`rounded-xl px-4 py-2.5 text-sm font-semibold ${chipClass}`}>Cancelar</button>
+              <button type="submit" disabled={!sellerName.trim() || !sellerEmail.trim() || sellerSubmitting} className="rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50">{sellerSubmitting ? "Enviando confirmação..." : "Criar e enviar acesso"}</button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

@@ -17,6 +17,7 @@ import HymnDetail from "./pages/HymnDetail";
 import Launcher from "./pages/Launcher";
 import Presentation from "./pages/Presentation";
 import Admin from "./pages/Admin";
+import Seller from "./pages/Seller";
 import Folders from "./pages/Folders";
 import FolderDetail from "./pages/FolderDetail";
 import PresentationEditor from "./pages/PresentationEditor";
@@ -24,17 +25,21 @@ import PresentationViewer from "./pages/PresentationViewer";
 import LiveQueue from "./pages/LiveQueue";
 import Settings from "./pages/Settings";
 import { getHymnEntryPath } from "./lib/lastHymn";
+import { SessionIdleWarning } from "./components/SessionIdleWarning";
 
 function ShellApp() {
-  const { profile } = useApp();
+  const { profile, isAdmin, isSeller } = useApp();
   const [showSetup, setShowSetup] = useState(false);
-  const needsSetup = profile !== null && !profile.church_name;
+  // Administradores e vendedores usam painéis operacionais, não uma igreja.
+  // Eles podem abrir Configurações depois, se desejarem personalizar o app.
+  const needsSetup = profile !== null && !profile.church_name && !isAdmin && !isSeller;
+  const homeTarget = isAdmin ? "/admin" : isSeller ? "/seller" : null;
 
   return (
     <>
       <AppShell onOpenSettings={() => setShowSetup(true)}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={homeTarget ? <Navigate to={homeTarget} replace /> : <Home />} />
           <Route path="/bible" element={<Bible />} />
           <Route path="/chapter/:bookId/:chapter" element={<Chapter />} />
           <Route path="/search" element={<Search />} />
@@ -48,6 +53,7 @@ function ShellApp() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/launcher" element={<Launcher />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/seller" element={<Seller />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AppShell>
@@ -112,6 +118,7 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <Root />
+        <SessionIdleWarning />
       </AuthProvider>
     </ThemeProvider>
   );
