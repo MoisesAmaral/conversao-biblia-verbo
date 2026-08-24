@@ -64,11 +64,11 @@ async function inviteUser(email: string): Promise<{ userId: string | null; alrea
   throw new Error(`Falha ao convidar usuário: ${res.status} ${body}`);
 }
 
-async function upsertPurchase(transactionId: string, email: string, product: string | null, status: string) {
+async function upsertPurchase(transactionId: string, email: string, product: string | null, status: string, affiliateCode: string | null) {
   await supabaseAdminRequest("/rest/v1/purchases?on_conflict=hotmart_transaction_id", {
     method: "POST",
     headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-    body: JSON.stringify({ hotmart_transaction_id: transactionId, email, product, status }),
+    body: JSON.stringify({ hotmart_transaction_id: transactionId, email, product, status, hotmart_affiliate_code: affiliateCode }),
   });
 }
 
@@ -94,6 +94,9 @@ export default async function handler(request: Request): Promise<Response> {
   const email: string | undefined = body.email ?? body.data?.buyer?.email ?? body.data?.purchase?.buyer?.email;
   const transactionId: string | undefined = body.transaction ?? body.data?.purchase?.transaction ?? body.data?.transaction;
   const product: string | null = (body.prod ?? body.data?.product?.id ?? null)?.toString() ?? null;
+  // Os nomes variam entre versões do webhook; valide com o evento-teste da sua
+  // conta Hotmart e acrescente aqui o caminho exato se necessário.
+  const affiliateCode: string | null = (body.affiliation_code ?? body.affiliate_code ?? body.data?.purchase?.affiliate_code ?? body.data?.affiliation?.code ?? null)?.toString() ?? null;
 
   if (!email || !transactionId) {
     return new Response("Missing required fields (email/transaction)", { status: 400 });
@@ -102,7 +105,12 @@ export default async function handler(request: Request): Promise<Response> {
   // Idempotência primeiro: a Hotmart reenvia o webhook se não receber 200 rápido, e o
   // registro de compra não pode duplicar efeito — upsert por transaction_id resolve isso
   // independente do resultado do resto do handler.
-  await upsertPurchase(transactionId, email, product, status || event || "unknown");
+  await upsertPurchase(transactionId, email, product, status || event || "unknown", affiliateCode);
+  if (affiliateCode) {
+    await supabaseAdminRequest("/rest/v1/rpc/assign_purchase_to_seller", {
+      method: "POST", body: JSON.stringify({ p_transaction_id: transactionId, p_affiliate_code: affiliateCode }),
+    });
+  }
 
   const isApproved = event === "PURCHASE_APPROVED" || event === "PURCHASE_COMPLETE" || APPROVED.has(status);
   const isRevoked =
