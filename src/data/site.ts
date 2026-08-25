@@ -2,8 +2,8 @@ import {
   BookOpenText,
   Broadcast,
   Church,
+  CloudArrowDown,
   Folders,
-  MagnifyingGlass,
   MonitorPlay,
   MusicNotes,
   Palette,
@@ -79,10 +79,10 @@ export const features = [
       "Configure nome, logo e tema visual uma única vez. Cada slide projetado carrega a marca da congregação, com elegância e sobriedade.",
   },
   {
-    icon: MagnifyingGlass,
-    title: "Busca instantânea",
+    icon: CloudArrowDown,
+    title: "4 versões da Bíblia, sempre à mão",
     description:
-      "O pastor citou uma passagem de surpresa? Encontre e projete em segundos, sem interromper o ritmo do culto, do estudo ou da ministração.",
+      "Almeida Corrigida Fiel, Almeida Revista e Atualizada, Almeida Revisada Imprensa Bíblica e NVI. Baixe a versão que a sua igreja usa e tenha ela disponível offline, sem depender da internet do templo.",
   },
   {
     icon: MonitorPlay,
@@ -119,6 +119,13 @@ export const workflow = [
   },
 ];
 
+export const bibleVersions = [
+  { code: "AA", name: "Almeida Revisada Imprensa Bíblica", offline: false },
+  { code: "ACF", name: "Almeida Corrigida Fiel", offline: true },
+  { code: "ARA", name: "Almeida Revista e Atualizada", offline: false },
+  { code: "NVI", name: "Nova Versão Internacional", offline: false },
+];
+
 export const useCases = [
   { icon: Church, title: "Culto de domingo" },
   { icon: BookOpenText, title: "Escola Bíblica" },
@@ -136,6 +143,7 @@ export const offer = {
     "Tudo o que sua igreja precisa para projetar a Palavra com excelência, em um único investimento.",
   items: [
     "Bíblia completa, offline, no Windows",
+    "4 versões para baixar: ACF, ARA, AA e NVI",
     "Harpa Cristã com os 640 hinos",
     "Departamentos com apresentações próprias",
     "Tela Ao vivo com modelo Preview/Programa",

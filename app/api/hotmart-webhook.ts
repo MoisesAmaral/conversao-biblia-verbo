@@ -94,9 +94,20 @@ export default async function handler(request: Request): Promise<Response> {
   const email: string | undefined = body.email ?? body.data?.buyer?.email ?? body.data?.purchase?.buyer?.email;
   const transactionId: string | undefined = body.transaction ?? body.data?.purchase?.transaction ?? body.data?.transaction;
   const product: string | null = (body.prod ?? body.data?.product?.id ?? null)?.toString() ?? null;
-  // Os nomes variam entre versões do webhook; valide com o evento-teste da sua
-  // conta Hotmart e acrescente aqui o caminho exato se necessário.
-  const affiliateCode: string | null = (body.affiliation_code ?? body.affiliate_code ?? body.data?.purchase?.affiliate_code ?? body.data?.affiliation?.code ?? null)?.toString() ?? null;
+  // No payload v2.0.0 da Hotmart (o formato atual da API), o afiliado vem em
+  // "data.affiliates": um array de { affiliate_code, name } — não em
+  // "data.affiliation" nem solto na raiz. Mantemos os outros caminhos como
+  // fallback pro formato de postback clássico, mas o de cima é o que bate com
+  // a documentação oficial; se uma venda de afiliado não for atribuída, o
+  // primeiro lugar a olhar é se este payload real tem "data.affiliates".
+  const affiliateCode: string | null = (
+    body.data?.affiliates?.[0]?.affiliate_code ??
+    body.affiliation_code ??
+    body.affiliate_code ??
+    body.data?.purchase?.affiliate_code ??
+    body.data?.affiliation?.code ??
+    null
+  )?.toString() ?? null;
 
   if (!email || !transactionId) {
     return new Response("Missing required fields (email/transaction)", { status: 400 });
@@ -107,9 +118,19 @@ export default async function handler(request: Request): Promise<Response> {
   // independente do resultado do resto do handler.
   await upsertPurchase(transactionId, email, product, status || event || "unknown", affiliateCode);
   if (affiliateCode) {
-    await supabaseAdminRequest("/rest/v1/rpc/assign_purchase_to_seller", {
+    const assignRes = await supabaseAdminRequest("/rest/v1/rpc/assign_purchase_to_seller", {
       method: "POST", body: JSON.stringify({ p_transaction_id: transactionId, p_affiliate_code: affiliateCode }),
     });
+    if (!assignRes.ok) {
+      // Não interrompe o fluxo (a compra e o acesso do comprador não dependem
+      // disso), mas sem este log uma venda de afiliado não atribuída falha
+      // 100% em silêncio — nada no banco indica que a tentativa aconteceu.
+      console.error("hotmart-webhook: assign_purchase_to_seller falhou", assignRes.status, await assignRes.text());
+    }
+  } else if (event === "PURCHASE_APPROVED" || APPROVED.has(status)) {
+    // Só loga em compra aprovada — evita ruído em eventos que legitimamente não
+    // têm afiliado (venda direta, sem link de afiliado).
+    console.log("hotmart-webhook: compra aprovada sem affiliate_code no payload (evento:", event ?? status, ")");
   }
 
   const isApproved = event === "PURCHASE_APPROVED" || event === "PURCHASE_COMPLETE" || APPROVED.has(status);
@@ -122,16 +143,24 @@ export default async function handler(request: Request): Promise<Response> {
       if (userId) {
         // Conta nova — cria profiles + account_status. profiles usa a policy own-insert,
         // mas aqui é a service-role escrevendo, que ignora RLS de qualquer forma.
-        await supabaseAdminRequest("/rest/v1/profiles", {
-          method: "POST",
-          headers: { Prefer: "return=minimal" },
-          body: JSON.stringify({ id: userId, church_name: "" }),
-        });
-        await supabaseAdminRequest("/rest/v1/account_status", {
-          method: "POST",
-          headers: { Prefer: "return=minimal" },
-          body: JSON.stringify({ id: userId, email, role: "user", is_active: true }),
-        });
+        const [profileRes, statusRes] = await Promise.all([
+          supabaseAdminRequest("/rest/v1/profiles", {
+            method: "POST",
+            headers: { Prefer: "return=minimal" },
+            body: JSON.stringify({ id: userId, church_name: "" }),
+          }),
+          supabaseAdminRequest("/rest/v1/account_status", {
+            method: "POST",
+            headers: { Prefer: "return=minimal" },
+            body: JSON.stringify({ id: userId, email, role: "user", is_active: true }),
+          }),
+        ]);
+        // Sem isto, um erro aqui (ex.: coluna renomeada, constraint nova) deixava
+        // o usuário convidado sem account_status — ele clica no link, define a
+        // senha, e cai num app que trata a conta como inativa/inexistente, sem
+        // nenhum rastro no log do porquê.
+        if (!profileRes.ok) console.error("hotmart-webhook: criação de profile falhou", profileRes.status, await profileRes.text());
+        if (!statusRes.ok) console.error("hotmart-webhook: criação de account_status falhou", statusRes.status, await statusRes.text());
       } else if (alreadyExists) {
         // Recompra ou reativação — só garante acesso, sem duplicar conta.
         const existingId = await findAccountIdByEmail(email);
