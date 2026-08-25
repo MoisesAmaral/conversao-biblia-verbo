@@ -33,7 +33,10 @@ function ShellApp() {
   // Administradores e vendedores usam painéis operacionais, não uma igreja.
   // Eles podem abrir Configurações depois, se desejarem personalizar o app.
   const needsSetup = profile !== null && !profile.church_name && !isAdmin && !isSeller;
-  const homeTarget = isAdmin ? "/admin" : isSeller ? "/seller" : null;
+  // Admin usa o mesmo app que qualquer igreja (Bíblia, Harpa, Ao vivo etc.) e
+  // acessa o painel administrativo por um ícone próprio na Rail — só o
+  // vendedor continua com "/" reservado ao painel dele, que é tudo que usa.
+  const homeTarget = isSeller ? "/seller" : null;
 
   return (
     <>
