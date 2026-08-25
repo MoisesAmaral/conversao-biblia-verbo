@@ -4,6 +4,7 @@ import { CheckCircle, Warning } from "@phosphor-icons/react";
 import { useAuth } from "../context/AuthContext";
 import { AuthLayout } from "../components/AuthLayout";
 import { supabase } from "../lib/supabase";
+import { claimSession } from "../lib/sessionGuard";
 
 export default function ResetPassword() {
   const { updatePassword } = useAuth();
@@ -57,6 +58,10 @@ export default function ResetPassword() {
       setError(updateError);
       return;
     }
+    // A sessão desta página não passou pela reivindicação de dispositivo (ver
+    // AuthContext) — reivindica agora, com a senha já definida, pra não cair
+    // sem sessão no primeiro heartbeat depois de entrar em "/".
+    await claimSession();
     setDone(true);
     setTimeout(() => navigate("/", { replace: true }), 2000);
   }
