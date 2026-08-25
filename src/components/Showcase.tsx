@@ -1,34 +1,5 @@
-import {
-  BookOpenText,
-  Broadcast,
-  SlidersHorizontal,
-  Television,
-} from "@phosphor-icons/react";
 import { SectionHeader } from "./SectionHeader";
-
-const screens = [
-  {
-    icon: BookOpenText,
-    title: "Busca dos livros",
-    description:
-      "Encontre rapidamente qualquer passagem do Antigo e Novo Testamento.",
-  },
-  {
-    icon: Television,
-    title: "Tela de apresentação",
-    description: "Versículos, hinos e slides em tela cheia, legíveis de longe.",
-  },
-  {
-    icon: SlidersHorizontal,
-    title: "Painel de controle",
-    description: "Avance versículos e troque o tema sem que a igreja perceba.",
-  },
-  {
-    icon: Broadcast,
-    title: "Tela Ao vivo",
-    description: "Busque e coloque no ar qualquer conteúdo num só lugar.",
-  },
-];
+import { AppTour } from "./AppTour";
 
 export function Showcase() {
   return (
@@ -59,21 +30,11 @@ export function Showcase() {
           </p>
         </div>
 
-        <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {screens.map((screen) => (
-            <article
-              key={screen.title}
-              className="rounded-xl border border-white/10 bg-white/[.04] p-5"
-            >
-              <screen.icon className="h-[22px] w-[22px] text-accent2" />
-              <h3 className="mt-3 text-[15px] font-extrabold text-white">
-                {screen.title}
-              </h3>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-[#9aa2b3]">
-                {screen.description}
-              </p>
-            </article>
-          ))}
+        <div className="mt-11">
+          <p className="mb-5 text-center text-[13px] font-semibold text-[#9aa2b3]">
+            Veja por dentro do painel do operador — clique nas abas abaixo.
+          </p>
+          <AppTour />
         </div>
       </div>
     </section>

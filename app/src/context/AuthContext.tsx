@@ -41,8 +41,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const lastHeartbeatAt = useRef(0);
 
   useEffect(() => {
+    // /reset-password é onde os links de convite e recuperação de senha caem
+    // (redirect_to fixo em AuthContext/admin-create-seller/hotmart-webhook).
+    // A sessão que chega ali é temporária, só pra trocar a senha — reivindicar
+    // o dispositivo agora derrubaria essa mesma sessão se a conta já estiver
+    // em uso em outra máquina (ex.: app desktop aberto), fazendo o link parecer
+    // "inválido" mesmo sendo válido. A reivindicação de verdade acontece depois,
+    // no próximo carregamento normal da página (já fora de /reset-password).
+    const isRecoveryLanding = window.location.pathname === "/reset-password";
+
     supabase.auth.getSession().then(async ({ data }) => {
-      if (data.session) {
+      if (data.session && !isRecoveryLanding) {
         // Reafirma a sessão deste dispositivo (idempotente pro mesmo session_id).
         // Só falha de verdade se um admin liberou a vaga e outra máquina assumiu
         // enquanto esta aba estava aberta/adormecida — nesse caso desloga aqui.
