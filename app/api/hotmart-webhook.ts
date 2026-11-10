@@ -17,15 +17,50 @@ const REVOKED = new Set(["canceled", "cancelled", "refunded", "chargeback", "exp
 async function supabaseAdminRequest(path: string, init: RequestInit): Promise<Response> {
   const url = `${process.env.VITE_SUPABASE_URL}${path}`;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  // O projeto Supabase é compartilhado com a 123DEVS: as tabelas da Bíblia
+  // ficam no schema "biblia". Na API REST, o schema vai nestes cabeçalhos.
+  const schema = path.startsWith("/rest/v1") ? { "Accept-Profile": "biblia", "Content-Profile": "biblia" } : {};
   return fetch(url, {
     ...init,
     headers: {
       "Content-Type": "application/json",
       apikey: serviceKey,
       Authorization: `Bearer ${serviceKey}`,
+      ...schema,
       ...(init.headers ?? {}),
     },
   });
+}
+
+/** Conta do Auth com este e-mail (Auth compartilhado: pode ser de outro produto). */
+async function findAuthUserIdByEmail(email: string): Promise<string | null> {
+  const res = await supabaseAdminRequest("/rest/v1/rpc/user_id_by_email", { method: "POST", body: JSON.stringify({ p_email: email }) });
+  if (!res.ok) return null;
+  return ((await res.json()) as string | null) ?? null;
+}
+
+/** Cria perfil e status da conta na Bíblia (idempotente). */
+async function createBibliaAccount(userId: string, email: string): Promise<void> {
+  const [profileRes, statusRes] = await Promise.all([
+    // O trigger já cria o perfil de contas convidadas com app=biblia; aqui é só
+    // garantia (ignora se já existir).
+    supabaseAdminRequest("/rest/v1/profiles?on_conflict=id", {
+      method: "POST",
+      headers: { Prefer: "resolution=ignore-duplicates,return=minimal" },
+      body: JSON.stringify({ id: userId, church_name: "" }),
+    }),
+    supabaseAdminRequest("/rest/v1/account_status?on_conflict=id", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify({ id: userId, email, role: "user", is_active: true }),
+    }),
+  ]);
+  // Sem isto, um erro aqui (ex.: coluna renomeada, constraint nova) deixava
+  // o usuário convidado sem account_status — ele clica no link, define a
+  // senha, e cai num app que trata a conta como inativa/inexistente, sem
+  // nenhum rastro no log do porquê.
+  if (!profileRes.ok) console.error("hotmart-webhook: criação de profile falhou", profileRes.status, await profileRes.text());
+  if (!statusRes.ok) console.error("hotmart-webhook: criação de account_status falhou", statusRes.status, await statusRes.text());
 }
 
 async function findAccountIdByEmail(email: string): Promise<string | null> {
@@ -50,7 +85,9 @@ async function inviteUser(email: string): Promise<{ userId: string | null; alrea
   // URL Configuration, senão o Supabase ignora isso e usa o Site URL mesmo assim.
   const res = await supabaseAdminRequest(`/auth/v1/invite?redirect_to=${encodeURIComponent("https://app.bibliaverbo.com.br/reset-password")}`, {
     method: "POST",
-    body: JSON.stringify({ email }),
+    // app=biblia: o modelo de e-mail do Supabase (compartilhado com a 123DEVS)
+    // mostra a marca da Bíblia, e o trigger cria o perfil da Bíblia.
+    body: JSON.stringify({ email, data: { app: "biblia" } }),
   });
   if (res.ok) {
     const user = (await res.json()) as { id: string };
@@ -141,30 +178,21 @@ export default async function handler(request: Request): Promise<Response> {
     if (isApproved) {
       const { userId, alreadyExists } = await inviteUser(email);
       if (userId) {
-        // Conta nova — cria profiles + account_status. profiles usa a policy own-insert,
-        // mas aqui é a service-role escrevendo, que ignora RLS de qualquer forma.
-        const [profileRes, statusRes] = await Promise.all([
-          supabaseAdminRequest("/rest/v1/profiles", {
-            method: "POST",
-            headers: { Prefer: "return=minimal" },
-            body: JSON.stringify({ id: userId, church_name: "" }),
-          }),
-          supabaseAdminRequest("/rest/v1/account_status", {
-            method: "POST",
-            headers: { Prefer: "return=minimal" },
-            body: JSON.stringify({ id: userId, email, role: "user", is_active: true }),
-          }),
-        ]);
-        // Sem isto, um erro aqui (ex.: coluna renomeada, constraint nova) deixava
-        // o usuário convidado sem account_status — ele clica no link, define a
-        // senha, e cai num app que trata a conta como inativa/inexistente, sem
-        // nenhum rastro no log do porquê.
-        if (!profileRes.ok) console.error("hotmart-webhook: criação de profile falhou", profileRes.status, await profileRes.text());
-        if (!statusRes.ok) console.error("hotmart-webhook: criação de account_status falhou", statusRes.status, await statusRes.text());
+        // Conta nova — cria profiles + account_status (service-role ignora RLS).
+        await createBibliaAccount(userId, email);
       } else if (alreadyExists) {
         // Recompra ou reativação — só garante acesso, sem duplicar conta.
         const existingId = await findAccountIdByEmail(email);
-        if (existingId) await setActive(existingId, true);
+        if (existingId) {
+          await setActive(existingId, true);
+        } else {
+          // O Auth é compartilhado: a pessoa já tem conta em outro produto
+          // (123DEVS, Glosa Zero...), mas ainda não na Bíblia. Libera com a
+          // mesma conta — ela entra com a senha que já usa.
+          const authId = await findAuthUserIdByEmail(email);
+          if (authId) await createBibliaAccount(authId, email);
+          else console.error("hotmart-webhook: e-mail já registrado, mas conta não encontrada");
+        }
       }
     } else if (isRevoked) {
       const existingId = await findAccountIdByEmail(email);
