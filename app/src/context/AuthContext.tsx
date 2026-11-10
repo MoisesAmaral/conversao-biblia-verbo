@@ -83,6 +83,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIdleWarning(false);
       return;
     }
+    // Em /reset-password a sessão é a temporária do link do e-mail e ainda não
+    // reivindicou o dispositivo (ver o comentário do efeito acima). O heartbeat
+    // falharia no primeiro toque de tecla e deslogaria a pessoa no meio da troca
+    // de senha ("Auth session missing!"). A reivindicação acontece ao salvar.
+    if (window.location.pathname === "/reset-password") return;
 
     let disposed = false;
     const signOutInactive = async () => {
